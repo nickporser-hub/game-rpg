@@ -3,61 +3,104 @@ import msvcrt
 import random
 import time
 
-
+#class Movement:
 os.system("cls")
-
 
 seed = random.randint(0, 999)
 
+def Battle(key):
+    global isOnEnemy
+    if isOnEnemy:
+        print("enemy found")
+    isOnEnemy = False
 
-def Battle():
-    print("enemy found")
-    #choice = input("what do you want to do")
+lockedDoor = "left"
+def Door(key):
+    global lockedDoor, subFacX, subFacY, seed
 
+    if key.lower() == "\r":
+
+        if isBesideLeftDoor:
+            if lockedDoor != "left":
+                seed = random.randint(0, 999)
+                subFacX += gridSizeX -2
+                os.system("cls")
+                chunk(subFacX, subFacY)
+                lockedDoor = "right"
+            else: print("door seems locked")
+        elif isBesideTopDoor:
+            if lockedDoor != "top":
+                seed = random.randint(0, 999)
+                subFacY += gridSizeY -2
+                os.system("cls")
+                chunk(subFacX, subFacY)
+                lockedDoor = "bottom"
+            else: print("door seems locked")
+        elif isBesideRightDoor:
+            if lockedDoor != "right":
+                seed = random.randint(0, 999)
+                subFacX -= gridSizeX -2
+                os.system("cls")
+                chunk(subFacX, subFacY)
+                lockedDoor = "left"
+            else: print("door seems locked")
+        elif isBesideBottomDoor:
+            if lockedDoor != "bottom":
+                seed = random.randint(0, 999)
+                subFacY -= gridSizeY -2
+                os.system("cls")
+                chunk(subFacX, subFacY)
+                lockedDoor = "top"
+            else: print("door seems locked")
 
 gridSizeX = 8
 gridSizeY = 10
 
-
 chunkSize = [[0 for _ in range(gridSizeX + 1)] for _ in range(gridSizeY + 1)]
-#blockY = [16]
-#blockX = [16]
 xPos = 1
 yPos = 1
 
-
 isOnEnemy = False
-isBesideDoor = False
-
+isOnChest = False
+isBesideTopDoor = False
+isBesideBottomDoor = False
+isBesideLeftDoor = False
+isBesideRightDoor = False
 
 def chunk(subFactorX, subFactorY):
     wall = "#  "
     block = "   "
-    enemy = "e  "
+    enemy = "e  "   
     doorY = "|  "
     doorX = "─  "
     player = "P  "
+    chest = "¤  "
     rand = random.Random(seed)
-    global isOnEnemy
-    global isBesideDoor
-
+    global isOnEnemy, isBesideTopDoor, isBesideBottomDoor, isBesideLeftDoor, isBesideRightDoor, isOnChest
+    randRoom = rand.randint(0, 1)
+    
 
     for i in range(gridSizeY + 1): # Y axel
         blockRowX = ""
 
-
         for j in range(gridSizeX + 1): # X axel
 
-
             finalPrint = ""
-            randBlock = rand.randint(0, 10)
-
+            randBlock = rand.randint(0, 20)
+            
 
             # bestämmer om blocktypen är en enemy
-            if randBlock <= 9:
-                finalPrint = block
+            if randRoom < 1:
+                if randBlock <= 19:
+                    finalPrint = block
+                else:
+                    finalPrint = enemy
             else:
-                finalPrint = enemy
+                if i == int(gridSizeY / 2) and j == int(gridSizeX / 2):
+                    finalPrint = chest
+                else:
+                    finalPrint = block
+
 
 
             # bestämmer blocktypen som ska printas
@@ -67,39 +110,47 @@ def chunk(subFactorX, subFactorY):
                 finalPrint = doorX
             elif i == gridSizeY or j == gridSizeX or i == 0 or j == 0:
                 finalPrint = wall
-           
+            
             chunkSize[i][j] = finalPrint
-           
+            
+            #tile checks
             playerPos = chunkSize[yPos + subFactorY][xPos + subFactorX]
-            doorCloseX = chunkSize[yPos + subFactorY][xPos + subFactorX + 1] == doorY or chunkSize[yPos + subFactorY][xPos + subFactorX - 1] == doorY
-            doorCloseY = chunkSize[yPos + subFactorY + 1][xPos + subFactorX] == doorX or chunkSize[yPos + subFactorY - 1][xPos + subFactorX] == doorX
 
+            playerPosX = xPos + subFactorX
+            playerPosY = yPos + subFactorY
+            
+            tileAbove = chunkSize[playerPosY - 1][playerPosX]
+            tileBelow = chunkSize[playerPosY + 1][playerPosX]
+            tileLeft = chunkSize[playerPosY][playerPosX - 1]
+            tileRight = chunkSize[playerPosY][playerPosX + 1]
 
+            isBesideTopDoor = tileAbove == doorX
+            isBesideBottomDoor = tileBelow == doorX      
+            isBesideLeftDoor = tileLeft == doorY
+            isBesideRightDoor = tileRight == doorY
+                
             if playerPos == enemy:
                 isOnEnemy = True
-            elif doorCloseX:
-                isBesideDoor = True
-            elif doorCloseY:
-                isBesideDoor = True
+                #enemyPos = chunkSize[yPos + subFactorY][xPos + subFactorX]
 
+            if playerPos == chest:
+                isOnChest = True
 
+            #end of tile checks
+            
             chunkSize[yPos + subFactorY][xPos + subFactorX] = player
             blockRowX += chunkSize[i][j]
 
-
         print(blockRowX)
-   
-chunk(0, 0)
 
+chunk(0, 4)
 
-subFacY = 0
+subFacY = 4
 subFacX = 0
-
 
 while True:
     if msvcrt.kbhit():
         key = msvcrt.getwch()
-
 
         if key.lower() == "w":
             subFacY -= 1
@@ -126,13 +177,11 @@ while True:
             subFacX -= 1
             if xPos + subFacX < 1:
                 subFacX = 0
-            else:
+            else: 
                 os.system("cls")
                 chunk(subFacX, subFacY)
-   
-    if isOnEnemy == True:
-        Battle()
-        isOnEnemy = False
-
+        
+        Door(key) # functioner kallas när en tangent pressas
+        Battle(key)
 
     time.sleep(1 / 100)
