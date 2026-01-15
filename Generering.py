@@ -11,31 +11,31 @@ os.system("cls")
 
 seed = random.randint(0, 999)
 
-player = Player
+def trap():
+    if Public.isOnTrap:
+        Player.health -= 1
+    Public.isOnTrap = False
 
-monster = Monster
-
-def battle(subFacX, subFacY):   # Funktion för fight
-    #global isOnEnemy
+def battle():   # Funktion för fight
     if Public.isOnEnemy:
         
         os.system("cls")
         #global PlayerInFight_health
-        player.inFightHealth = player.health
+        Player.inFightHealth = Player.health
 
-        if player.lvl < 5:
-            monster.health = player.health + random.randint(-2, 2)
-            monster.strength = random.randint(1, 2)
+        if Player.lvl < 5:
+            Monster.health = Player.health + random.randint(-2, 2)
+            Monster.strength = random.randint(1, 2)
             Funktioner.print_monster()
-        elif 5 < player.lvl < 10:
-            monster.health = player.health + random.randint(-3, 3)
-            monster.strength = random.randint(2, 3)
+        elif 5 < Player.lvl < 10:
+            Monster.health = Player.health + random.randint(-3, 3)
+            Monster.strength = random.randint(2, 3)
             Funktioner.print_monster()
-        elif player.lvl == 5:      # BOSS 1
-            monster.health = 10
+        elif Player.lvl == 5:      # BOSS 1
+            Monster.health = 10
             Funktioner.print_boss()
-        elif player.lvl == 10:     # BOSS 2
-            monster.health = 20
+        elif Player.lvl == 10:     # BOSS 2
+            Monster.health = 20
             Funktioner.print_boss()
 
         global fight_bar, fight_bar_original, i        # Player attack
@@ -45,8 +45,15 @@ def battle(subFacX, subFacY):   # Funktion för fight
         while battle_over == False: # loopar fight bar
             for i in range(len(fight_bar_original)):     # updaterar fight bar
 
+                # Avrundar alla tal till 2 decimaler
+                Monster.health = round(Monster.health, 2)
+                Monster.strength = round(Monster.strength, 2)
+                Player.inFightHealth = round(Player.inFightHealth, 2)
+                Player.strength = round(Player.strength, 2)
+                Player.defense = round(Player.defense, 2)
+
                 os.system("cls")    # Sätter nästa bit som röd fyrkant
-                if player.lvl == 5 or player.lvl == 10:
+                if Player.lvl == 5 or Player.lvl == 10:
                     Funktioner.print_boss()
                 else:
                     Funktioner.print_monster()
@@ -63,10 +70,10 @@ def battle(subFacX, subFacY):   # Funktion för fight
                         if key == " ":
                             if fight_bar_original[i] == "🟨":
                                 print("Hit!")
-                                monster.health -= player.strength     # Skadar monster
+                                Monster.health -= Player.strength     # Skadar monster
                             elif fight_bar_original[i] == "🟩":
                                 print("Critical Hit!")
-                                monster.health -= (player.strength + 2)     # +2 skada på monster
+                                Monster.health -= (Player.strength + 2)     # +2 skada på monster
                             else:
                                 print("Miss...")
                             player_turn = False
@@ -75,31 +82,31 @@ def battle(subFacX, subFacY):   # Funktion för fight
         
                 # MONSTRETS TUR:
                 if player_turn == False:
-                    dmg = monster.strength
+                    dmg = Monster.strength
 
                     #Defense träff
-                    if player.defense > 0:
-                        absorbed = min(dmg, player.defense)
+                    if Player.defense > 0:
+                        absorbed = min(dmg, Player.defense)
                         dmg -= absorbed
-                        player.defense -= absorbed
+                        Player.defense -= absorbed
 
                         #gör defense skada som sen förstör itemet
-                        for eq in list(player.equipped):
+                        for eq in list(Player.equipped):
                             if "defense" in eq.attributes:
                                 eq.durability -= absorbed        # defense attack skadar items durability
                                 if eq.durability <= 0:
                                     print(f"[{eq.name} broke!]")
                                     Funktioner.RemoveItemStats(eq)
-                                    player.equipped.remove(eq)
+                                    Player.equipped.remove(eq)
                                     time.sleep(1)
 
                     #det som är kvar går till hp.
-                    player.inFightHealth -= dmg
+                    Player.inFightHealth -= dmg
 
                 # Kollar om spelaren har förlorat/vunnit fighten
-                if monster.health <= 0:
+                if Monster.health <= 0:
                     os.system("cls")
-                    if player.lvl == 10:
+                    if Player.lvl == 10:
                         print("YOU HAVE KILLED BOSSE! YOU WIN")
                         print("🏆  CONGRATULATIONS!  🏆")
                         print("________________________________")
@@ -118,7 +125,7 @@ def battle(subFacX, subFacY):   # Funktion för fight
                         print("Art Director: Berg, Lyder, Porsér")
                         print("")
                         time.sleep(1)
-                        print("Music Composer: Porsér, Lyder, Berg")
+                        print("Music Composer: Lyder")
                         print("")
                         time.sleep(1)
                         print("Special thanks to: Holger, clashmästaren(CasperKing), Lyder family, Mr Howard, Goldbarren, Shafootie, Goldklumpen, Rohgold, Luca Baldantoni, and YOU!")
@@ -126,23 +133,21 @@ def battle(subFacX, subFacY):   # Funktion för fight
                         time.sleep(5)
                         exit()
                     print("🎖️   YOU WON! 🎖️   [+1 lvl]")
-                    player.lvl += 1
+                    Funktioner.level_up()
                     time.sleep(1)
                     battle_over = True
                     break
-                elif player.inFightHealth <= 0:
+                elif Player.inFightHealth <= 0:
                     os.system("cls")
                     print("🪦  YOU LOST 🪦   [-1❤️ ]")
-                    player.health -= 1
+                    Player.health -= 1
                     time.sleep(1)
                     battle_over = True
                     break
 
         Public.isOnEnemy = False
         os.system("cls")
-        chunk(subFacX, subFacY)
-
-
+        Public.exitingMenu = True
 
 lockedDoor = "left"
 roomNumber = 0
@@ -213,6 +218,7 @@ def chunk(subFactorX, subFactorY):
     doorX = "─  "
     player = "P  "
     chest = "¤  "
+    trap = "X  "
     rand = random.Random(seed)
     global roomNumber, isBesideTopDoor, isBesideBottomDoor, isBesideLeftDoor, isBesideRightDoor, deadEnemies
     
@@ -226,7 +232,12 @@ def chunk(subFactorX, subFactorY):
             
             # bestämmer om blocktypen är en enemy
             if roomNumber % 2 != 0:
-                if randBlock <= 19:
+                if randBlock <= 1:
+                    if (x, y) in deadEnemies:
+                        finalPrint = block
+                    else:
+                        finalPrint = trap
+                elif randBlock <= 19:
                     finalPrint = block
                 else:
                     if (x, y) in deadEnemies:
@@ -235,7 +246,7 @@ def chunk(subFactorX, subFactorY):
                         finalPrint = enemy
             else:
                 if (x, y) in deadEnemies:#använder en vektor2 för att ta position och bedöma om chistan är tagen
-                     finalPrint = block
+                    finalPrint = block
                 else:
                     if x == int(gridSizeY / 2) and y == int(gridSizeX / 2):
                         finalPrint = chest
@@ -271,6 +282,10 @@ def chunk(subFactorX, subFactorY):
             if playerPos == enemy:
                 Public.isOnEnemy = True
                 deadEnemies.add((playerPosY, playerPosX))
+            
+            if playerPos == trap:
+                Public.isOnTrap = True
+                deadEnemies.add((playerPosY, playerPosX))
 
             if playerPos == chest:
                 Public.isOnChest = True
@@ -283,6 +298,10 @@ def chunk(subFactorX, subFactorY):
 
         print(blockRowX)
     print("\nPress [H] for help")
+    if Public.isOnChest:
+        print("\nPress [T] to open the chest")
+    if Public.isOnTrap:
+        print("\nYou stepped on a trap and took one damage")
    
 chunk(0, 4)
 
@@ -292,33 +311,30 @@ subFacX = 0
 
 isInMenu = False   # fortsätt med detta nästa gång
 
-while True:
-    key = ""
-    if msvcrt.kbhit() and isInMenu == False: # isInMenu fixa sen
-        key = msvcrt.getwch().lower()
-
-        if key == "w":
-            subFacY -= 1
-            if yPos + subFacY < 1:
-                subFacY = 0
-            else:
-                os.system("cls")
-                chunk(subFacX, subFacY)
-        elif key == "s":
-            subFacY += 1
-            if yPos + subFacY > gridSizeY -1:
-                subFacY = gridSizeY -2
-            else:
-                os.system("cls")
-                chunk(subFacX, subFacY)
-        elif key == "d":
-            subFacX += 1
-            if xPos + subFacX > gridSizeX -1:
-                subFacX = gridSizeX -2
-            else:
-                os.system("cls")
-                chunk(subFacX, subFacY)
-        elif key == "a":
+def Movement(key):
+    global subFacX, subFacY
+    if key == "w":
+        subFacY -= 1
+        if yPos + subFacY < 1:
+            subFacY = 0
+        else:
+            os.system("cls")
+            chunk(subFacX, subFacY)
+    elif key == "s":
+        subFacY += 1
+        if yPos + subFacY > gridSizeY -1:
+            subFacY = gridSizeY -2
+        else:
+            os.system("cls")
+            chunk(subFacX, subFacY)
+    elif key == "d":
+        subFacX += 1
+        if xPos + subFacX > gridSizeX -1:
+            subFacX = gridSizeX -2
+        else:
+            os.system("cls")
+            chunk(subFacX, subFacY)
+    elif key == "a":
             subFacX -= 1
             if xPos + subFacX < 1:
                 subFacX = 0
@@ -326,21 +342,30 @@ while True:
                 os.system("cls")
                 chunk(subFacX, subFacY)
 
+while True:
+    key = ""
+    if msvcrt.kbhit() and isInMenu == False: # isInMenu fixa sen
+        key = msvcrt.getwch().lower()
+
+        if Public.isOnChest == False:
+            Movement(key)
+
         # --- Inventory ---
-        elif key == "i":
+        if key == "i":
             Funktioner.inventory()
             os.system("cls")
             chunk(subFacX, subFacY)
 
         Door(key)
-        battle(subFacX, subFacY)
+        battle()
+        trap()
     
-    Funktioner.stats(key, subFacX, subFacY)
-    Funktioner.Chest(key, subFacX, subFacY)
+    Funktioner.stats(key)
+    Funktioner.Chest(key)
     Funktioner.defeat()
-    Funktioner.help_list(key, subFacX, subFacY)  # HJÄLP
+    Funktioner.help_list(key)  # HJÄLP
 
-    if Public.exitingMenu == True:
+    if Public.exitingMenu:
         chunk(subFacX, subFacY)
         Public.exitingMenu = False
 

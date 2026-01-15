@@ -1,6 +1,7 @@
 class Public:
     isOnEnemy = False
     isOnChest = False
+    isOnTrap = False
     exitingMenu = False
     deadEnemies = set()
     inFightHealth = 0
@@ -21,4 +22,4 @@ class Player:
 # MONSTER PROPERTIES:
 class Monster:
     health = 0
-    strength = 0 
+    strength = 0

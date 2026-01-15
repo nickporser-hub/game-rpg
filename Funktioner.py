@@ -10,22 +10,24 @@ from Publics import Player
 ################## Public.inFightHealth uppdateras bara i början av battle functionen #####################
 
 def print_monster():    # Mall för fight
-    print("👹 Monster \t HP:", (Monster.health * "❤️ "), "\t Strength:", (Monster.strength * "💪"))
+    print("👹 Monster \t HP:", (Monster.health, "❤️ "), "\t Strength:", (Monster.strength, "💪"))
     print("______________________________________________________________________________________")
-    print("\n🤺 Player \t HP:", (Player.inFightHealth * "❤️ "), "\t Defense:", (Player.defense * "🛡️ "),"\t Strength:",(Player.strength * "💪"))
+    print("\n🤺 Player \t HP:", (Player.inFightHealth, "❤️ "), "\t Defense:", (Player.defense, "🛡️ "),"\t Strength:",(Player.strength, "💪"))
     print("______________________________________________________________________________________")
     print("\nPress [SPACE] on 🟩 to attack.")
     print("")
 
 def print_boss():    # Mall för fight (För bossar)
-    print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     BOSSE PERSSON    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
-    print("\n👹 BOSS \t HP:", (Monster.health * "❤️ "), "\t Strength:", (Monster.strength * "💪"))
+    if Player.lvl == 5:
+        print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     BOSSE PERSSON    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
+    else:
+        print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     VIDAR    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
+    print("\n👹 BOSS \t HP:", (Monster.health, "❤️ "), "\t Strength:", (Monster.strength, "💪"))
     print("______________________________________________________________________________________")
-    print("\n🤺 Player \t HP:", (Player.inFightHealth * "❤️ "), "\t Defense:", (Player.defense * "🛡️ "), "\t Strength:",(Player.strength * "💪"))
+    print("\n🤺 Player \t HP:", (Player.inFightHealth, "❤️ "), "\t Defense:", (Player.defense, "🛡️ "), "\t Strength:",(Player.strength, "💪"))
     print("______________________________________________________________________________________")
     print("\nPress [SPACE] on 🟩 to attack.")
     print("")
-
 
 class Item:
     def __init__(self, name, attributes, durability=3):
@@ -36,7 +38,6 @@ class Item:
     def stats(self):
         return self.attributes
 
-
 möjliga_item= [
     Item("Sword", {"strength": 1}, durability=1),
     Item("Shield", {"defense": 1}, durability=1),
@@ -45,9 +46,8 @@ möjliga_item= [
     Item("Ted bear", {"defense":3}, durability=3)
     ]
 
-
 isInChest = False
-def Chest(key, subFacX, subFacY):
+def Chest(key):
     global isInChest
     if Public.isOnChest and isInChest == False:
         isInChest = True
@@ -55,6 +55,9 @@ def Chest(key, subFacX, subFacY):
         print("You found a chest! Press [T] to open it.")
 
     if key == "t" and Public.isOnChest:
+        Player.lvl += 0.5
+        if Player.lvl % 1 == 0:
+            level_up()
         os.system("cls")
         found_item = random.choice(möjliga_item)
         print(f"You found a {found_item.name}!")        #väljer ett item och säger vilket
@@ -84,7 +87,6 @@ def Chest(key, subFacX, subFacY):
         time.sleep(1)
         os.system("cls")
         Public.exitingMenu = True
-        #Player.chunk(subFacX, subFacY)
 
 def item_stats(item):
     if "defense" in item.attributes:
@@ -125,7 +127,7 @@ def inventory():
 
         print("")
         print("Press number to equip item          Hold Shift+number to drop item")
-        print("Press u+number to unequip item      Press i to close inventory")
+        print("Press u+number to unequip item      Press [I] to close inventory")
     refresh()
 
     shift_num = {       #shift +nummer
@@ -146,7 +148,7 @@ def inventory():
                 os.system("cls")
                 break
 
-            elif key == "u":        #på med unequip mode
+            elif key == "u" and not unequip_mode:        #på med unequip mode
                 print("Chose an item to unequip.")
                 unequip_mode = True
 
@@ -188,47 +190,35 @@ def inventory():
                     itemName = Player.inventory.pop(index)   #drop item
                 refresh()
 
-isInStats = False
-def stats(key, subFacX, subFacY):        # visa stats
-    global isInStats
+def stats(key):        # visa stats
     if key == "e":
-        if isInStats == False:
-            isInStats = True
-            os.system("cls")
-            print("STATS")
-            print("________________________________________")
-            print("")
-            print("HP:", (Player.health * "❤️ "), "[", str(Player.health), "]")
-            print("")
-            print("Defense:", (Player.defense * "🛡️ "), "[", str(Player.defense), "]")
-            print("")
-            print("Strength:", (Player.strength * "💪"), "[", str(Player.strength), "]")
-            print("")
-            print("Level:", str(Player.lvl))
-        elif isInStats == True:
-            isInStats = False
-            os.system("cls")
-            Public.exitingMenu = True
+        os.system("cls")
+        print("STATS")
+        print("________________________________________")
+        print("")
+        print("HP:", str(Player.health), "❤️")
+        print("")
+        print("Defense:", str(Player.defense), "🛡️")
+        print("")
+        print("Strength:", str(Player.strength), "💪")
+        print("")
+        print("Level:", str(Player.lvl), "🏆")
 
-isInHelp = False
-def help_list(key, subFacX, subFacY):    # Hjälp lista med spelar kommandon.
-    global isInHelp
 
+        print("\nPress [W/A/S/D] to exit")
+
+def help_list(key):    # Hjälp lista med spelar kommandon.
     if key == "h": 
-        if isInHelp == True:
-            isInHelp = False
-            os.system("cls")
-            Public.exitingMenu = True
-        elif isInHelp == False:
-            isInHelp = True
-            os.system("cls")
-            print("🎮  List of game controls 🎮")
-            print("________________________________________")
-            print("\n[W/A/S/D] to move character")
-            print("\n[E] to open/close player stats")
-            print("\n[I] to open/close inventory")
-            print("\n[Enter] to enter door")
-            print("\n[Space] to attack monster")
+        os.system("cls")
+        print("🎮  List of game controls 🎮")
+        print("________________________________________")
+        print("\n[W/A/S/D] to move character")
+        print("\n[E] to open/close player stats")
+        print("\n[I] to open/close inventory")
+        print("\n[Enter] to enter door")
+        print("\n[Space] to attack monster")
+        
+        print("\nPress [W/A/S/D] to exit")
 
 def defeat():
     if Player.health <= 0:
@@ -242,22 +232,24 @@ def defeat():
             time.sleep(1)
         exit()
 
-def levelup():      # Låter spelaren välja upgrade vid levelup.
-    Player.lvl += 1
+def level_up():
+    Player.lvl += 1     # Ger 1 lvl
     os.system("cls")
-    print("⭐ LEVEL UP!⭐")
-    print("\nChoose level up:")
-    print("\n[H] Health / [S] Strength")
+    print("⬆️   LEVEL UP!   ⬆️")
+    print("________________________________________")
+    print("\nChoose what to upgrade:")
+    print("\n[H] HP [+ 1 ❤️ ] \t [S] Strength [+ 0.3 💪]")
     while True:
         if msvcrt.kbhit():
             key = msvcrt.getwch()
-            if key == "h":
+            if key.lower() == "h":      # Väljer HP
                 Player.health += 1
-                print("+1 ❤️")
-                time.sleep(0.5)
+                os.system("cls")
+                print("+ 1 ❤️")
                 break
-            elif key == "s":
-                Player.strength += 1
-                print("+1 💪")
-                time.sleep(0.5)
+            if key.lower() == "s":      # Väljer STR
+                Player.strength += 0.3
+                Player.strength = round(Player.strength, 2)
+                os.system("cls")
+                print("+ 0.3 💪")
                 break
