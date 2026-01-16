@@ -205,8 +205,7 @@ def stats(key):        # visa stats
         print("")
         print("Level:", str(Player.lvl), "🏆")
 
-
-        print("\nPress [W/A/S/D] to exit")
+        print("\nPress [escape] or move to exit the menu")
 
 def help_list(key):    # Hjälp lista med spelar kommandon.
     if key == "h": 
@@ -219,7 +218,7 @@ def help_list(key):    # Hjälp lista med spelar kommandon.
         print("\n[Enter] to enter door")
         print("\n[Space] to attack monster")
         
-        print("\nPress [W/A/S/D] to exit")
+        print("\nPress [escape] or move to exit the menu")
 
 def defeat():
     if Player.health <= 0:
