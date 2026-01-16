@@ -18,7 +18,7 @@ def print_monster():    # Mall för fight
     print("")
 
 def print_boss():    # Mall för fight (För bossar)
-    if Player.lvl == 5:
+    if  5 <= Player.lvl < 10:
         print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     BOSSE PERSSON    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
     else:
         print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     VIDAR    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
@@ -46,17 +46,18 @@ möjliga_item= [
     Item("Ted bear", {"defense":3}, durability=3)
     ]
 
+chestsOpened = 0
 isInChest = False
 def Chest(key):
-    global isInChest
+    global isInChest, chestsOpened
     if Public.isOnChest and isInChest == False:
         isInChest = True
         os.system("cls")
         print("You found a chest! Press [T] to open it.")
 
     if key == "t" and Public.isOnChest:
-        Player.lvl += 0.5
-        if Player.lvl % 1 == 0:
+        chestsOpened += 1
+        if chestsOpened % 2 == 0:
             level_up()
         os.system("cls")
         found_item = random.choice(möjliga_item)

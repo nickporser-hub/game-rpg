@@ -16,7 +16,9 @@ def trap():
         Player.health -= 1
     Public.isOnTrap = False
 
+boss1Killed = False
 def battle():   # Funktion för fight
+    global boss1Killed
     if Public.isOnEnemy:
         
         os.system("cls")
@@ -24,20 +26,21 @@ def battle():   # Funktion för fight
         Player.inFightHealth = Player.health
 
         if Player.lvl < 5:
-            Monster.health = Player.health + random.randint(-2, 2)
+            Monster.health = 5 + random.randint(-2, 2)
             Monster.strength = random.randint(1, 2)
             Funktioner.print_monster()
-        elif 5 < Player.lvl < 10:
-            Monster.health = Player.health + random.randint(-3, 3)
+        elif 5 < Player.lvl < 10 and boss1Killed == True: 
+            Monster.health = 7 + random.randint(-3, 3)
             Monster.strength = random.randint(2, 3)
             Funktioner.print_monster()
-        elif Player.lvl == 5:      # BOSS 1
+        elif Player.lvl >= 5:      # BOSS 1
             Monster.health = 10
             Funktioner.print_boss()
-        elif Player.lvl == 10:     # BOSS 2
+        elif Player.lvl >= 10:     # BOSS 2
             Monster.health = 20
             Funktioner.print_boss()
 
+    
         global fight_bar, fight_bar_original, i        # Player attack
         fight_bar_original = ["⬜","⬜","⬜","⬜","⬜","⬜","🟨","🟨","🟩","🟨","🟨","⬜","⬜","⬜","⬜","⬜","⬜"]
         battle_over = False
@@ -53,7 +56,7 @@ def battle():   # Funktion för fight
                 Player.defense = round(Player.defense, 2)
 
                 os.system("cls")    # Sätter nästa bit som röd fyrkant
-                if Player.lvl == 5 or Player.lvl == 10:
+                if Player.lvl >= 5 and boss1Killed == False or Player.lvl == 10:
                     Funktioner.print_boss()
                 else:
                     Funktioner.print_monster()
@@ -106,6 +109,9 @@ def battle():   # Funktion för fight
                 # Kollar om spelaren har förlorat/vunnit fighten
                 if Monster.health <= 0:
                     os.system("cls")
+                    if Player.lvl > 5:
+                        boss1Killed = True
+
                     if Player.lvl == 10:
                         print("YOU HAVE KILLED BOSSE! YOU WIN")
                         print("🏆  CONGRATULATIONS!  🏆")
@@ -162,9 +168,9 @@ def Door(key):
                 subFacX += gridSizeX -2
                 os.system("cls")
                 roomNumber += 1
+                deadEnemies = set()
                 chunk(subFacX, subFacY)
                 lockedDoor = "right"
-                deadEnemies = set()
             else: print("door seems locked")
         elif isBesideTopDoor:
             if lockedDoor != "top":
@@ -172,9 +178,9 @@ def Door(key):
                 subFacY += gridSizeY -2
                 os.system("cls")
                 roomNumber += 1
+                deadEnemies = set()
                 chunk(subFacX, subFacY)
                 lockedDoor = "bottom"
-                deadEnemies = set()
             else: print("door seems locked")
         elif isBesideRightDoor:
             if lockedDoor != "right":
@@ -182,9 +188,9 @@ def Door(key):
                 subFacX -= gridSizeX -2
                 os.system("cls")
                 roomNumber += 1
+                deadEnemies = set()
                 chunk(subFacX, subFacY)
                 lockedDoor = "left"
-                deadEnemies = set()
             else: print("door seems locked")
         elif isBesideBottomDoor:
             if lockedDoor != "bottom":
@@ -192,9 +198,9 @@ def Door(key):
                 subFacY -= gridSizeY -2
                 os.system("cls")
                 roomNumber += 1
+                deadEnemies = set()
                 chunk(subFacX, subFacY)
                 lockedDoor = "top"
-                deadEnemies = set()
             else: print("door seems locked")
 
 gridSizeX = 8
@@ -226,7 +232,7 @@ def chunk(subFactorX, subFactorY):
         blockRowX = ""
 
         for y in range(gridSizeX + 1): # X axel
-
+            
             finalPrint = ""
             randBlock = rand.randint(0, 20)
             
@@ -309,8 +315,6 @@ chunk(0, 4)
 subFacY = 4
 subFacX = 0
 
-isInMenu = False   # fortsätt med detta nästa gång
-
 def Movement(key):
     global subFacX, subFacY
     if key == "w":
@@ -344,7 +348,7 @@ def Movement(key):
 
 while True:
     key = ""
-    if msvcrt.kbhit() and isInMenu == False: # isInMenu fixa sen
+    if msvcrt.kbhit():
         key = msvcrt.getwch().lower()
 
         if Public.isOnChest == False:
