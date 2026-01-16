@@ -108,7 +108,7 @@ def battle():   # Funktion för fight
                 # Kollar om spelaren har förlorat/vunnit fighten
                 if Monster.health <= 0:
                     os.system("cls")
-                    if Player.lvl > 5:
+                    if Player.lvl >= 5:
                         boss1Killed = True
 
                     if Player.lvl >= 10:

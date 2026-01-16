@@ -7,8 +7,6 @@ from Publics import Public
 from Publics import Monster
 from Publics import Player
 
-################## Public.inFightHealth uppdateras bara i början av battle functionen #####################
-
 def print_monster():    # Mall för fight
     print("👹 Monster \t HP:", (Monster.health, "❤️ "), "\t Strength:", (Monster.strength, "💪"))
     print("______________________________________________________________________________________")
@@ -19,9 +17,9 @@ def print_monster():    # Mall för fight
 
 def print_boss():    # Mall för fight (För bossar)
     if  5 <= Player.lvl < 10:
-        print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     BOSSE PERSSON    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
-    else:
         print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     VIDAR    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
+    else:
+        print("\n꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂     BOSSE PERSSON    ꧁ 𓆩༺✧༻𓆪 ꧂꧁ 𓆩༺✧༻𓆪 ꧂")
     print("\n👹 BOSS \t HP:", (Monster.health, "❤️ "), "\t Strength:", (Monster.strength, "💪"))
     print("______________________________________________________________________________________")
     print("\n🤺 Player \t HP:", (Player.inFightHealth, "❤️ "), "\t Defense:", (Player.defense, "🛡️ "), "\t Strength:",(Player.strength, "💪"))
